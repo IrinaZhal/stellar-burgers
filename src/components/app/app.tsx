@@ -18,7 +18,6 @@ import {
   useLocation,
   useNavigate
 } from 'react-router-dom';
-import { Provider } from 'react-redux';
 
 import { AppHeader, IngredientDetails, Modal, OrderInfo } from '@components';
 import { useDispatch } from '../../services/store';
@@ -57,6 +56,7 @@ const App = () => {
         <Route path='/reset-password' element={<ResetPassword />} />
         <Route path='/profile' element={<Profile />} />
         <Route path='/profile/orders' element={<ProfileOrders />} />
+        <Route path='/profile/orders/:number' element={<OrderInfo />} />
         <Route path='*' element={<NotFound404 />} />
       </Routes>
 
@@ -65,13 +65,21 @@ const App = () => {
           <Route
             path='/ingredients/:id'
             element={
-              <Modal title={''} onClose={onClose}>
+              <Modal title={'Детали ингредиента'} onClose={onClose}>
                 <IngredientDetails />
               </Modal>
             }
           />
           <Route
             path='/feed/:number'
+            element={
+              <Modal title={''} onClose={onClose}>
+                <OrderInfo />
+              </Modal>
+            }
+          />
+          <Route
+            path='/profile/orders/:number'
             element={
               <Modal title={''} onClose={onClose}>
                 <OrderInfo />
