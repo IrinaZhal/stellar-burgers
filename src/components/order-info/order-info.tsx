@@ -1,21 +1,37 @@
-import { FC, useMemo } from 'react';
+import { FC, useEffect, useMemo } from 'react';
 import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
 import { TIngredient } from '@utils-types';
-import { useSelector } from '../../services/store';
+import { useDispatch, useSelector } from '../../services/store';
 import { getIngredients } from '../../services/ingredientsSlice';
+import { useParams } from 'react-router-dom';
+import {
+  fetchFeeds,
+  getAllOrders,
+  setOrderModalNumber
+} from '../../services/ordersSlice';
 
 export const OrderInfo: FC = () => {
   /** TODO: взять переменные orderData и ingredients из стора */
-  const orderData = {
-    createdAt: '',
-    ingredients: [],
-    _id: '',
-    status: '',
-    name: '',
-    updatedAt: 'string',
-    number: 0
-  };
+  const { number } = useParams<{ number: string }>();
+  const orders = useSelector(getAllOrders);
+
+  function findOrder() {
+    const searchNumber = Number(number);
+    const searchOrder = orders.find((order) => order.number === searchNumber);
+    return searchOrder;
+  }
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (number) {
+      dispatch(setOrderModalNumber(number));
+    }
+    dispatch(fetchFeeds());
+  }, [dispatch, number]);
+
+  const orderData = findOrder();
 
   const ingredients: TIngredient[] = useSelector(getIngredients);
 
@@ -67,3 +83,6 @@ export const OrderInfo: FC = () => {
 
   return <OrderInfoUI orderInfo={orderInfo} />;
 };
+function setModalOrderNumber(number: string): any {
+  throw new Error('Function not implemented.');
+}

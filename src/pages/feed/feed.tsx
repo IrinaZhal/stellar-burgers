@@ -7,17 +7,24 @@ import { fetchFeeds, getAllOrders } from '../../services/ordersSlice';
 
 export const Feed: FC = () => {
   /** TODO: взять переменную из стора */
+  const orders: TOrder[] = useSelector(getAllOrders);
+
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(fetchFeeds());
   }, [dispatch]);
 
-  const orders: TOrder[] = useSelector(getAllOrders);
-
   if (!orders.length) {
     return <Preloader />;
   }
 
-  return <FeedUI orders={orders} handleGetFeeds={() => {}} />;
+  return (
+    <FeedUI
+      orders={orders}
+      handleGetFeeds={() => {
+        dispatch(fetchFeeds());
+      }}
+    />
+  );
 };

@@ -16,13 +16,16 @@ import {
   Routes,
   Route,
   useLocation,
-  useNavigate
+  useNavigate,
+  useParams
 } from 'react-router-dom';
 
 import { AppHeader, IngredientDetails, Modal, OrderInfo } from '@components';
 import { useDispatch } from '../../services/store';
 import { fetchIngredients } from '../../services/ingredientsSlice';
 import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { getOrderModalNumber } from '../../services/ordersSlice';
 
 const App = () => {
   const location = useLocation();
@@ -36,6 +39,8 @@ const App = () => {
   const onClose = () => {
     navigate(-1);
   };
+
+  const oderModalNumber = useSelector(getOrderModalNumber);
 
   useEffect(() => {
     dispatch(fetchIngredients());
@@ -73,7 +78,7 @@ const App = () => {
           <Route
             path='/feed/:number'
             element={
-              <Modal title={''} onClose={onClose}>
+              <Modal title={`#${oderModalNumber}`} onClose={onClose}>
                 <OrderInfo />
               </Modal>
             }
