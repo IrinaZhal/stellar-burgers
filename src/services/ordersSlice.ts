@@ -25,6 +25,11 @@ export const ordersSlice = createSlice({
   name: 'orders',
   initialState,
   reducers: {},
+  selectors: {
+    getAllOrders: (state) => state.orders,
+    getTotal: (state) => state.total,
+    getTotalToday: (state) => state.totalToday
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchFeeds.pending, (state) => {
@@ -42,4 +47,5 @@ export const ordersSlice = createSlice({
   }
 });
 
+export const { getAllOrders, getTotal, getTotalToday } = ordersSlice.selectors;
 export default ordersSlice.reducer;

@@ -3,15 +3,14 @@ import { TIngredientsCategoryProps } from './type';
 import { TIngredient, TConstructorIngredient } from '@utils-types';
 import { IngredientsCategoryUI } from '../ui/ingredients-category';
 import { useSelector } from '../../services/store';
+import { getBun, getBurgerIngredients } from '../../services/constructorSlice';
 
 export const IngredientsCategory = forwardRef<
   HTMLUListElement,
   TIngredientsCategoryProps
 >(({ title, titleRef, ingredients }, ref) => {
-  const bun = useSelector((state) => state.constructorBurger.bun);
-  const burgerIngredients = useSelector(
-    (state) => state.constructorBurger.ingredients
-  );
+  const bun = useSelector(getBun);
+  const burgerIngredients = useSelector(getBurgerIngredients);
 
   /** TODO: взять переменную из стора */
   const burgerConstructor = {

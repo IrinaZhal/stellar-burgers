@@ -48,9 +48,13 @@ const constructorSlice = createSlice({
         state.ingredients.splice(action.payload.from, 1)[0]
       );
     }
+  },
+  selectors: {
+    getBun: (state) => state.bun,
+    getBurgerIngredients: (state) => state.ingredients
   }
 });
-
+export const { getBun, getBurgerIngredients } = constructorSlice.selectors;
 export const { chooseBun, addIngredient, removeIngredient, moveIngredient } =
   constructorSlice.actions;
 export default constructorSlice.reducer;

@@ -24,6 +24,10 @@ export const ingredientsSlice = createSlice({
   name: 'ingredients',
   initialState,
   reducers: {},
+  selectors: {
+    getIngredients: (state) => state.ingredients,
+    getIngredientsLoading: (state) => state.isLoading
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchIngredients.pending, (state) => {
@@ -39,5 +43,6 @@ export const ingredientsSlice = createSlice({
   }
 });
 
-//export const { allIngredients, ingredientsIsLoading } = ingredientsSlice.selectors;
+export const { getIngredients, getIngredientsLoading } =
+  ingredientsSlice.selectors;
 export default ingredientsSlice.reducer;
