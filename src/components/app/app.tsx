@@ -77,7 +77,7 @@ const App = () => {
         <Route
           path='/forgot-password'
           element={
-            <ProtectedRoute>
+            <ProtectedRoute onlyUnAuth>
               <ForgotPassword />
             </ProtectedRoute>
           }
@@ -85,7 +85,7 @@ const App = () => {
         <Route
           path='/reset-password'
           element={
-            <ProtectedRoute>
+            <ProtectedRoute onlyUnAuth>
               <ResetPassword />
             </ProtectedRoute>
           }
@@ -130,7 +130,10 @@ const App = () => {
           <Route
             path='/feed/:number'
             element={
-              <Modal title={`#${oderModalNumber}`} onClose={onClose}>
+              <Modal
+                title={`#${String(oderModalNumber).padStart(6, '0')}`}
+                onClose={onClose}
+              >
                 <OrderInfo />
               </Modal>
             }

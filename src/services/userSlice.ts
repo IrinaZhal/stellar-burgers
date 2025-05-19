@@ -1,5 +1,6 @@
 import {
   fetchWithRefresh,
+  getOrdersApi,
   getUserApi,
   loginUserApi,
   logoutApi,
@@ -8,24 +9,28 @@ import {
 } from '@api';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { deleteCookie, getCookie, setCookie } from '../utils/cookie';
-import { TUser } from '@utils-types';
+import { TOrder, TUser } from '@utils-types';
 
 type TUserState = {
   isAuthChecked: boolean; // флаг для статуса проверки токена пользователя
   isAuthenticated: boolean;
   userData: TUser | null;
-  loginUserError: unknown | null;
+  loginUserError: string;
   loginUserRequest: boolean;
   isLoading: boolean;
+  userOrders: TOrder[];
+  ordersLoading: boolean;
 };
 
 const initialState: TUserState = {
   isAuthChecked: false, // флаг для статуса проверки токена пользователя
   isAuthenticated: false,
   userData: null,
-  loginUserError: null,
+  loginUserError: '',
   loginUserRequest: false,
-  isLoading: false
+  isLoading: false,
+  userOrders: [],
+  ordersLoading: false
 };
 
 export const getUser = createAsyncThunk('user/getUser', async (_, thunkAPI) => {
@@ -80,18 +85,27 @@ export const loginUser = createAsyncThunk(
 
 export const logoutUser = createAsyncThunk(
   'user/logoutUser',
-  (_, { dispatch }) => {
-    logoutApi()
-      .then(() => {
-        localStorage.clear(); // очищаем refreshToken
-        deleteCookie('accessToken'); // очищаем accessToken
-        dispatch(userLogout()); // удаляем пользователя из хранилища
-      })
-      .catch(() => {
-        console.log('Ошибка выполнения выхода');
-      });
+  async (_, { dispatch }) => {
+    try {
+      const res = await logoutApi();
+      localStorage.clear(); // очищаем refreshToken
+      deleteCookie('accessToken'); // очищаем accessToken
+      dispatch(userLogout()); // удаляем пользователя из хранилища
+    } catch (error) {
+      console.log('Ошибка выполнения выхода');
+    }
   }
 );
+
+export const getOrders = createAsyncThunk('user/userOrders', async () => {
+  try {
+    const orders = await getOrdersApi();
+    return orders;
+  } catch (error) {
+    console.log('Ошибка загрузки заказов');
+  }
+});
+
 export const userSlice = createSlice({
   name: 'user',
   initialState,
@@ -106,7 +120,9 @@ export const userSlice = createSlice({
   selectors: {
     isAuthCheckedSelector: (state) => state.isAuthChecked,
     getUserData: (state) => state.userData,
-    authenticatedSelector: (state) => state.isAuthenticated
+    authenticatedSelector: (state) => state.isAuthenticated,
+    getLoginUserError: (state) => state.loginUserError,
+    getUserOrders: (state) => state.userOrders
   },
   extraReducers: (builder) => {
     builder
@@ -124,11 +140,11 @@ export const userSlice = createSlice({
       })
       .addCase(loginUser.pending, (state) => {
         state.loginUserRequest = true;
-        state.loginUserError = null;
+        state.loginUserError = '';
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loginUserRequest = false;
-        state.loginUserError = action.payload;
+        state.loginUserError = 'Неверный e-mail или пароль';
         state.isAuthChecked = true;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
@@ -136,6 +152,7 @@ export const userSlice = createSlice({
         state.loginUserRequest = false;
         state.isAuthenticated = true;
         state.isAuthChecked = true;
+        state.loginUserError = '';
       })
       .addCase(getUser.fulfilled, (state, action) => {
         state.userData = action.payload;
@@ -160,11 +177,26 @@ export const userSlice = createSlice({
         state.userData = null;
         state.isAuthenticated = false;
         state.isAuthChecked = true;
+      })
+      .addCase(getOrders.pending, (state) => {
+        state.ordersLoading = true;
+      })
+      .addCase(getOrders.fulfilled, (state, action) => {
+        state.userOrders = action.payload ?? [];
+        state.ordersLoading = false;
+      })
+      .addCase(getOrders.rejected, (state, action) => {
+        state.ordersLoading = false;
       });
   }
 });
 
 export const { authChecked, userLogout } = userSlice.actions;
-export const { isAuthCheckedSelector, getUserData, authenticatedSelector } =
-  userSlice.selectors;
+export const {
+  isAuthCheckedSelector,
+  getUserData,
+  authenticatedSelector,
+  getLoginUserError,
+  getUserOrders
+} = userSlice.selectors;
 export default userSlice.reducer;

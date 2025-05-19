@@ -122,7 +122,7 @@ export const orderBurgerApi = (data: string[]) =>
 type TOrderResponse = TServerResponse<{
   orders: TOrder[];
 }>;
-/* получаем информацию о заказе по номеру */
+
 export const getOrderByNumberApi = (number: number) =>
   fetch(`${URL}/orders/${number}`, {
     method: 'GET',

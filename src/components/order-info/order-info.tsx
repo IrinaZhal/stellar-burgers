@@ -83,6 +83,3 @@ export const OrderInfo: FC = () => {
 
   return <OrderInfoUI orderInfo={orderInfo} />;
 };
-function setModalOrderNumber(number: string): any {
-  throw new Error('Function not implemented.');
-}
