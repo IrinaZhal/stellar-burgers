@@ -15,7 +15,6 @@ type TRefreshResponse = TServerResponse<{
   accessToken: string;
 }>;
 
-/* Обновляет accessToken по refreshToken */
 export const refreshToken = (): Promise<TRefreshResponse> =>
   fetch(`${URL}/auth/token`, {
     method: 'POST',
