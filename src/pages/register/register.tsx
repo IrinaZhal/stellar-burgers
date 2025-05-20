@@ -10,8 +10,6 @@ export const Register: FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const isAuthenticated = useSelector(authenticatedSelector);
-
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
     const data = {

@@ -21,11 +21,13 @@ import {
 } from 'react-router-dom';
 
 import { AppHeader, IngredientDetails, Modal, OrderInfo } from '@components';
-import { useDispatch } from '../../services/store';
+import { useDispatch, useSelector } from '../../services/store';
 import { fetchIngredients } from '../../services/ingredientsSlice';
 import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { getOrderModalNumber } from '../../services/ordersSlice';
+import {
+  getOrderModalNumber,
+  setOrderModalNumber
+} from '../../services/ordersSlice';
 import { ProtectedRoute } from '../protected-route';
 import { checkUserAuth } from '../../services/userSlice';
 
@@ -141,7 +143,10 @@ const App = () => {
           <Route
             path='/profile/orders/:number'
             element={
-              <Modal title={''} onClose={onClose}>
+              <Modal
+                title={`#${String(oderModalNumber).padStart(6, '0')}`}
+                onClose={onClose}
+              >
                 <OrderInfo />
               </Modal>
             }

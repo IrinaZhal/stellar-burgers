@@ -55,6 +55,11 @@ const constructorSlice = createSlice({
   }
 });
 export const { getBun, getBurgerIngredients } = constructorSlice.selectors;
-export const { chooseBun, addIngredient, removeIngredient, moveIngredient } =
-  constructorSlice.actions;
+export const {
+  chooseBun,
+  addIngredient,
+  removeIngredient,
+  moveIngredient,
+  clearConstructor
+} = constructorSlice.actions;
 export default constructorSlice.reducer;

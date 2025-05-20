@@ -5,7 +5,8 @@ import {
   loginUserApi,
   logoutApi,
   registerUserApi,
-  TRegisterData
+  TRegisterData,
+  updateUserApi
 } from '@api';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { deleteCookie, getCookie, setCookie } from '../utils/cookie';
@@ -106,6 +107,19 @@ export const getOrders = createAsyncThunk('user/userOrders', async () => {
   }
 });
 
+export const changeUserData = createAsyncThunk(
+  'user/changeUserData',
+  async (user: Partial<TRegisterData>, thunkAPI) => {
+    try {
+      const res = await updateUserApi(user);
+      return res.user;
+    } catch (error) {
+      console.log('Ошибка редактирования профиля');
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
 export const userSlice = createSlice({
   name: 'user',
   initialState,
@@ -122,7 +136,9 @@ export const userSlice = createSlice({
     getUserData: (state) => state.userData,
     authenticatedSelector: (state) => state.isAuthenticated,
     getLoginUserError: (state) => state.loginUserError,
-    getUserOrders: (state) => state.userOrders
+    getUserOrders: (state) => state.userOrders,
+    getUserOrdersLoading: (state) => state.ordersLoading,
+    checkLoading: (state) => state.isLoading
   },
   extraReducers: (builder) => {
     builder
@@ -187,6 +203,16 @@ export const userSlice = createSlice({
       })
       .addCase(getOrders.rejected, (state, action) => {
         state.ordersLoading = false;
+      })
+      .addCase(changeUserData.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(changeUserData.rejected, (state, action) => {
+        state.isLoading = false;
+      })
+      .addCase(changeUserData.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.userData = action.payload ?? state.userData;
       });
   }
 });
@@ -197,6 +223,8 @@ export const {
   getUserData,
   authenticatedSelector,
   getLoginUserError,
-  getUserOrders
+  getUserOrders,
+  getUserOrdersLoading,
+  checkLoading
 } = userSlice.selectors;
 export default userSlice.reducer;
