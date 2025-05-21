@@ -7,31 +7,27 @@ import { getIngredients } from '../../services/ingredientsSlice';
 import { useParams } from 'react-router-dom';
 import {
   fetchFeeds,
+  fetchOrderbyNumber,
   getAllOrders,
+  getOrderbyNumber,
   setOrderModalNumber
 } from '../../services/ordersSlice';
 
 export const OrderInfo: FC = () => {
   /** TODO: взять переменные orderData и ingredients из стора */
   const { number } = useParams<{ number: string }>();
-  const orders = useSelector(getAllOrders);
-
-  function findOrder() {
-    const searchNumber = Number(number);
-    const searchOrder = orders.find((order) => order.number === searchNumber);
-    return searchOrder;
-  }
 
   const dispatch = useDispatch();
 
   useEffect(() => {
     if (number) {
       dispatch(setOrderModalNumber(number));
+      dispatch(fetchOrderbyNumber(Number(number)));
     }
     dispatch(fetchFeeds());
   }, [dispatch, number]);
 
-  const orderData = findOrder();
+  const orderData = useSelector(getOrderbyNumber);
 
   const ingredients: TIngredient[] = useSelector(getIngredients);
 

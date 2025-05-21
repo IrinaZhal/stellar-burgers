@@ -16,6 +16,8 @@ type TOrdersState = {
   isLoadingAllOrders: boolean;
   orderRequest: boolean;
   orderModalData: TOrder | null;
+  orderByNumber: TOrder | null;
+  isOrderLoading: boolean;
 };
 
 const initialState: TOrdersState = {
@@ -26,7 +28,9 @@ const initialState: TOrdersState = {
   totalToday: 0,
   isLoadingAllOrders: false,
   orderRequest: false,
-  orderModalData: null
+  orderModalData: null,
+  orderByNumber: null,
+  isOrderLoading: false
 };
 
 export const postOrder = createAsyncThunk(
@@ -46,12 +50,23 @@ export const fetchFeeds = createAsyncThunk('orders/fetchFeeds', async () => {
   return feed;
 });
 
+export const fetchOrderbyNumber = createAsyncThunk(
+  'orders/fetchOrderbyNumber',
+  async (number: number) => {
+    const orders = await getOrderByNumberApi(number);
+    return orders.orders[0];
+  }
+);
+
 export const ordersSlice = createSlice({
   name: 'orders',
   initialState,
   reducers: {
     setOrderModalNumber: (state, action: PayloadAction<string>) => {
       state.orderModalNumber = action.payload;
+    },
+    clearOrderModalData: (state) => {
+      state.orderModalData = null;
     }
   },
   selectors: {
@@ -62,7 +77,9 @@ export const ordersSlice = createSlice({
     getLoadingOrdersStatus: (state) => state.isLoadingAllOrders,
     getOrderRequest: (state) => state.orderRequest,
     getOrderModalData: (state) => state.orderModalData,
-    getOrderModalInfo: (state) => state.orderModalInfo
+    getOrderModalInfo: (state) => state.orderModalInfo,
+    getOrderbyNumber: (state) => state.orderByNumber,
+    getOrderLoading: (state) => state.isOrderLoading
   },
   extraReducers: (builder) => {
     builder
@@ -87,6 +104,16 @@ export const ordersSlice = createSlice({
       })
       .addCase(postOrder.rejected, (state, action) => {
         state.orderRequest = false;
+      })
+      .addCase(fetchOrderbyNumber.pending, (state) => {
+        state.isOrderLoading = true;
+      })
+      .addCase(fetchOrderbyNumber.rejected, (state, action) => {
+        state.isOrderLoading = false;
+      })
+      .addCase(fetchOrderbyNumber.fulfilled, (state, action) => {
+        state.isOrderLoading = false;
+        state.orderByNumber = action.payload;
       });
   }
 });
@@ -98,7 +125,9 @@ export const {
   getOrderModalNumber,
   getLoadingOrdersStatus,
   getOrderRequest,
-  getOrderModalData
+  getOrderModalData,
+  getOrderLoading,
+  getOrderbyNumber
 } = ordersSlice.selectors;
-export const { setOrderModalNumber } = ordersSlice.actions;
+export const { setOrderModalNumber, clearOrderModalData } = ordersSlice.actions;
 export default ordersSlice.reducer;

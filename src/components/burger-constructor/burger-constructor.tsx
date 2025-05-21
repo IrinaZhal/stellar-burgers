@@ -8,6 +8,7 @@ import {
   getBurgerIngredients
 } from '../../services/constructorSlice';
 import {
+  clearOrderModalData,
   getOrderModalData,
   getOrderRequest,
   postOrder
@@ -55,7 +56,7 @@ export const BurgerConstructor: FC = () => {
   };
 
   const closeOrderModal = () => {
-    navigate(-1);
+    dispatch(clearOrderModalData());
   };
 
   const price = useMemo(
