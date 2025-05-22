@@ -1,24 +1,63 @@
 import { FC, useMemo } from 'react';
 import { TConstructorIngredient } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
+import { useDispatch, useSelector } from '../../services/store';
+import {
+  clearConstructor,
+  getBun,
+  getBurgerIngredients
+} from '../../services/constructorSlice';
+import {
+  clearOrderModalData,
+  getOrderModalData,
+  getOrderRequest,
+  postOrder
+} from '../../services/ordersSlice';
+import { useNavigate } from 'react-router-dom';
+import { authenticatedSelector } from '../../services/userSlice';
 
 export const BurgerConstructor: FC = () => {
   /** TODO: взять переменные constructorItems, orderRequest и orderModalData из стора */
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const isAuthenticated = useSelector(authenticatedSelector);
+
+  const bun = useSelector(getBun);
+  const burgerIngredients = useSelector(getBurgerIngredients);
+
   const constructorItems = {
-    bun: {
-      price: 0
-    },
-    ingredients: []
+    bun: bun,
+    ingredients: burgerIngredients
   };
 
-  const orderRequest = false;
+  const orderRequest = useSelector(getOrderRequest);
 
-  const orderModalData = null;
+  const orderModalData = useSelector(getOrderModalData);
 
   const onOrderClick = () => {
     if (!constructorItems.bun || orderRequest) return;
+
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+    const burderIngredientsId = constructorItems.ingredients.map(
+      (item) => item._id
+    );
+
+    const order = [
+      constructorItems.bun?._id,
+      ...burderIngredientsId,
+      constructorItems.bun?._id
+    ];
+
+    dispatch(postOrder(order));
+    dispatch(clearConstructor());
   };
-  const closeOrderModal = () => {};
+
+  const closeOrderModal = () => {
+    dispatch(clearOrderModalData());
+  };
 
   const price = useMemo(
     () =>
@@ -29,8 +68,6 @@ export const BurgerConstructor: FC = () => {
       ),
     [constructorItems]
   );
-
-  return null;
 
   return (
     <BurgerConstructorUI
