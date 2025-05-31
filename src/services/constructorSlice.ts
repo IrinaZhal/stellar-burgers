@@ -7,12 +7,12 @@ type TMoveParams = {
   to: number;
 };
 
-type TConstructorState = {
+export type TConstructorState = {
   bun: TIngredient | null;
   ingredients: Array<TConstructorIngredient>;
 };
 
-const initialState: TConstructorState = {
+export const initialState: TConstructorState = {
   bun: null,
   ingredients: []
 };

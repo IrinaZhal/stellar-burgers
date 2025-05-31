@@ -20,7 +20,7 @@ type TOrdersState = {
   isOrderLoading: boolean;
 };
 
-const initialState: TOrdersState = {
+export const initialState: TOrdersState = {
   orderModalNumber: '',
   orderModalInfo: false,
   orders: [],

@@ -23,7 +23,7 @@ type TUserState = {
   ordersLoading: boolean;
 };
 
-const initialState: TUserState = {
+export const initialState: TUserState = {
   isAuthChecked: false, // флаг для статуса проверки токена пользователя
   isAuthenticated: false,
   userData: null,
